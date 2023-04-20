@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
-import { ColorType, createChart } from "lightweight-charts";
+import { LineStyle, createChart } from "lightweight-charts";
+import "../App.css";
 
 const Basic = () => {
   const chartContainerRef = useRef();
@@ -1051,25 +1052,69 @@ const Basic = () => {
       },
     ];
 
-    const chart = createChart(chartContainerRef.current, {
+    const chart = createChart(chartContainerRef.current);
+
+    chart.applyOptions({
       layout: {
-        background: { type: ColorType.Solid, color: "white" },
+        background: { color: "#222" },
+        textColor: "#DDD",
+      },
+      grid: {
+        vertLines: { color: "#444" },
+        horzLines: { color: "#444" },
       },
       width: chartContainerRef.current.clientWidth,
       height: 500,
+      crosshair: {
+        vertLine: {
+          width: 5,
+          style: LineStyle.Solid,
+          color: "#C3BCDB44",
+          labelBackgroundColor: "#9B7DFF",
+        },
+        horzLine: {
+          color: "#9B7DFF",
+          labelBackgroundColor: "#9B7DFF",
+        },
+      },
     });
 
-    const newSeries = chart.addCandlestickSeries({
-      upColor: "#26a69a",
-      downColor: "#ef5350",
+    chart.timeScale().fitContent();
+
+    const newSeries = chart.addCandlestickSeries();
+
+    newSeries.applyOptions({
+      wickUpColor: "rgb(54, 116, 217)",
+      upColor: "rgb(54, 116, 217)",
+      wickDownColor: "rgb(225, 50, 85)",
+      downColor: "rgb(225, 50, 85)",
       borderVisible: false,
-      wickUpColor: "#26a69a",
-      wickDownColor: "#ef5350",
     });
 
     newSeries.setData(initialData);
 
-    return () => [chart.remove()];
+    // Setting the border color for the vertical axis
+    chart.priceScale("right").applyOptions({
+      borderColor: "#71649C",
+    });
+
+    // Setting the border color for the horizontal axis
+    chart.timeScale().applyOptions({
+      borderColor: "#71649C",
+    });
+
+    const handleResize = () => {
+      chart.applyOptions({
+        width: chartContainerRef.current.clientWidth,
+      });
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      chart.remove();
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
   return <div ref={chartContainerRef}></div>;
 };
@@ -1078,3 +1123,7 @@ export default Basic;
 
 // lineColor: '#2962FF', topColor: '#2962FF', bottomColor: 'rgba(41, 98, 255, 0.28)' }
 // { upColor: '#26a69a', downColor: '#ef5350', borderVisible: false, wickUpColor: '#26a69a', wickDownColor: '#ef5350' }
+
+// const handleResize = () => {
+//     chart.applyOptions({ width: chartContainerRef.current.clientWidth });
+// };
