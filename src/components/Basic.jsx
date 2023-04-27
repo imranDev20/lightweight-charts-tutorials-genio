@@ -6,7 +6,7 @@ const Basic = () => {
   const chartContainerRef = useRef();
 
   useEffect(() => {
-    const initialData = [
+    const candlesData = [
       {
         time: "2018-10-19",
         open: 180.34,
@@ -1052,6 +1052,13 @@ const Basic = () => {
       },
     ];
 
+    const lineData = candlesData.map((item) => ({
+      time: item.time,
+      value: (item.open + item.close) / 2,
+    }));
+
+    console.log(lineData);
+
     const chart = createChart(chartContainerRef.current);
 
     chart.applyOptions({
@@ -1081,9 +1088,18 @@ const Basic = () => {
 
     chart.timeScale().fitContent();
 
-    const newSeries = chart.addCandlestickSeries();
+    const lineSeries = chart.addLineSeries();
 
-    newSeries.applyOptions({
+    lineSeries.setData(lineData);
+
+    lineSeries.applyOptions({
+      lineWidth: 1,
+      color: "#45E5CB",
+    });
+
+    const candleStickSeries = chart.addCandlestickSeries();
+
+    candleStickSeries.applyOptions({
       wickUpColor: "rgb(54, 116, 217)",
       upColor: "rgb(54, 116, 217)",
       wickDownColor: "rgb(225, 50, 85)",
@@ -1091,14 +1107,12 @@ const Basic = () => {
       borderVisible: false,
     });
 
-    newSeries.setData(initialData);
+    candleStickSeries.setData(candlesData);
 
-    // Setting the border color for the vertical axis
     chart.priceScale("right").applyOptions({
       borderColor: "#71649C",
     });
 
-    // Setting the border color for the horizontal axis
     chart.timeScale().applyOptions({
       borderColor: "#71649C",
     });
