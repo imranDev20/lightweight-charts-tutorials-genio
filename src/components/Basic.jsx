@@ -4272,9 +4272,9 @@ const Basic = () => {
   useEffect(() => {
     const handleResize = () => {
       myChart?.applyOptions({
-        width: document.documentElement.clientWidth,
+        width: document.documentElement.clientWidth * 0.85,
       });
-      setResizeWidth(document.documentElement.clientWidth);
+      setResizeWidth(document.documentElement.clientWidth * 0.85);
     };
 
     window.addEventListener("resize", handleResize);
@@ -4287,22 +4287,39 @@ const Basic = () => {
     });
   };
   return (
-    <ResizableBox
-      height={500}
-      onResize={handleResize}
-      width={document.documentElement.clientWidth}
-      minConstraints={[document.documentElement.clientWidth * 0.5, 100]}
-      maxConstraints={[document.documentElement.clientWidth, 500]}
-      resizeHandles={["e"]}
+    <div
+      style={{
+        display: "flex",
+      }}
     >
+      <ResizableBox
+        height={500}
+        onResize={handleResize}
+        width={document.documentElement.clientWidth * 0.85}
+        minConstraints={[document.documentElement.clientWidth * 0.5, 100]}
+        maxConstraints={[
+          document.documentElement.clientWidth * 0.85,
+          document.documentElement.clientHeight,
+        ]}
+        resizeHandles={["e"]}
+      >
+        <div
+          style={{
+            width: resizeWidth,
+            position: "relative",
+          }}
+          ref={chartContainerRef}
+        ></div>
+      </ResizableBox>
       <div
         style={{
-          width: resizeWidth,
-          position: "relative",
+          backgroundColor: "green",
+          width: "100%",
         }}
-        ref={chartContainerRef}
-      ></div>
-    </ResizableBox>
+      >
+        Hello
+      </div>
+    </div>
   );
 };
 
