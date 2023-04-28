@@ -1,9 +1,17 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { LineStyle, TickMarkType, createChart } from "lightweight-charts";
 import "../App.css";
+import { ResizableBox } from "react-resizable";
 
 const Basic = () => {
   const chartContainerRef = useRef();
+  const [myChart, setChart] = useState(null);
+  const [width, setWidth] = useState(0);
+  const [resizeWidth, setResizeWidth] = useState(
+    document.documentElement.clientWidth
+  );
+
+  console.log(width);
 
   useEffect(() => {
     // const initialData = [
@@ -4136,6 +4144,7 @@ const Basic = () => {
     ];
 
     const chart = createChart(chartContainerRef.current);
+    setChart(chart);
 
     chart.applyOptions({
       layout: {
@@ -4146,7 +4155,7 @@ const Basic = () => {
         vertLines: { color: "#444" },
         horzLines: { color: "#444" },
       },
-      width: chartContainerRef.current.clientWidth,
+      width: width,
       height: 500,
       crosshair: {
         vertLine: {
@@ -4255,27 +4264,49 @@ const Basic = () => {
 
     newSeries.setData(initialData);
 
+    return () => {
+      chart.remove();
+    };
+  }, [width]);
+
+  useEffect(() => {
     const handleResize = () => {
-      chart.applyOptions({
-        width: chartContainerRef.current.clientWidth,
+      myChart?.applyOptions({
+        width: document.documentElement.clientWidth,
       });
+      setResizeWidth(document.documentElement.clientWidth);
     };
 
     window.addEventListener("resize", handleResize);
+  }, [myChart]);
 
-    return () => {
-      chart.remove();
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-  return <div ref={chartContainerRef}></div>;
+  const handleResize = (event, { element, size, handle }) => {
+    console.log(chartContainerRef.current.clientWidth);
+    myChart?.applyOptions({
+      width: size.width,
+    });
+  };
+  return (
+    <ResizableBox
+      height={500}
+      onResize={handleResize}
+      width={document.documentElement.clientWidth}
+      minConstraints={[document.documentElement.clientWidth * 0.5, 100]}
+      maxConstraints={[document.documentElement.clientWidth, 500]}
+      resizeHandles={["e"]}
+    >
+      <div
+        style={{
+          width: resizeWidth,
+          position: "relative",
+        }}
+        ref={chartContainerRef}
+      ></div>
+    </ResizableBox>
+  );
 };
 
 export default Basic;
 
 // lineColor: '#2962FF', topColor: '#2962FF', bottomColor: 'rgba(41, 98, 255, 0.28)' }
 // { upColor: '#26a69a', downColor: '#ef5350', borderVisible: false, wickUpColor: '#26a69a', wickDownColor: '#ef5350' }
-
-// const handleResize = () => {
-//     chart.applyOptions({ width: chartContainerRef.current.clientWidth });
-// };
