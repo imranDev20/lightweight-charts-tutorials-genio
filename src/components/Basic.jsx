@@ -8,7 +8,13 @@ const Basic = () => {
   const chart2ContainerRef = useRef();
   const [myChart, setChart] = useState(null);
   const [myChart2, setChart2] = useState(null);
-  const [width, setWidth] = useState(document.documentElement.clientWidth);
+  const [resizedWidth, setResizedWidth] = useState(
+    document.documentElement.clientWidth * 0.85
+  );
+
+  const [resizedHeight, setResizedHeight] = useState(
+    document.documentElement.clientHeight
+  );
 
   useEffect(() => {
     // const initialData = [
@@ -4271,16 +4277,26 @@ const Basic = () => {
       myChart?.applyOptions({
         width: document.documentElement.clientWidth * 0.85,
       });
-      setWidth(document.documentElement.clientWidth * 0.85);
+      setResizedWidth(document.documentElement.clientWidth * 0.85);
     };
 
     window.addEventListener("resize", handleResize);
   }, [myChart]);
 
-  const handleResize = (event, { element, size, handle }) => {
-    console.log(chartContainerRef.current.clientWidth);
+  const handleMainChartResize = (event, { element, size, handle }) => {
+    console.log(size);
+
     myChart?.applyOptions({
       width: size.width,
+    });
+  };
+
+  const handleLowerChartResize = (event, { element, size, handle }) => {
+    console.log(document.documentElement.clientHeight - size.height);
+    console.log(size);
+
+    myChart?.applyOptions({
+      height: document.documentElement.clientHeight - size.height,
     });
   };
 
@@ -4292,7 +4308,7 @@ const Basic = () => {
     >
       <ResizableBox
         height={document.documentElement.clientHeight}
-        onResize={handleResize}
+        onResize={handleMainChartResize}
         width={document.documentElement.clientWidth * 0.85}
         minConstraints={[document.documentElement.clientWidth * 0.5, 100]}
         maxConstraints={[
@@ -4303,29 +4319,45 @@ const Basic = () => {
       >
         <div
           style={{
-            width: width,
-            position: "relative",
+            width: resizedWidth,
             display: "flex",
             flexDirection: "column",
+            justifyContent: "space-between",
           }}
         >
           <div
             style={{
               width: "100%",
-              height: document.documentElement.clientHeight * 0.64,
+              flexGrow: 1,
             }}
             ref={chartContainerRef}
           ></div>
 
-          <div
-            style={{
-              width: "100%",
-              height: document.documentElement.clientHeight * 0.35,
-              backgroundColor: "beige",
-            }}
+          <ResizableBox
+            className="vertical-resize"
+            height={document.documentElement.clientHeight * 0.35}
+            width={Infinity}
+            onResize={handleLowerChartResize}
+            resizeHandles={["n"]}
+            // maxConstraints={[
+            //   document.documentElement.clientWidth * 0.85,
+            //   document.documentElement.clientHeight * 0.65,
+            // ]}
+            // minConstraints={[
+            //   document.documentElement.clientWidth * 0.5,
+            //   document.documentElement.clientHeight * 0.15,
+            // ]}
           >
-            Hello2
-          </div>
+            <div
+              style={{
+                width: "100%",
+                height: "100%",
+                backgroundColor: "beige",
+              }}
+            >
+              Hello2
+            </div>
+          </ResizableBox>
         </div>
       </ResizableBox>
       <div
