@@ -5,13 +5,10 @@ import { ResizableBox } from "react-resizable";
 
 const Basic = () => {
   const chartContainerRef = useRef();
+  const chart2ContainerRef = useRef();
   const [myChart, setChart] = useState(null);
-  const [width, setWidth] = useState(0);
-  const [resizeWidth, setResizeWidth] = useState(
-    document.documentElement.clientWidth
-  );
-
-  console.log(width);
+  const [myChart2, setChart2] = useState(null);
+  const [width, setWidth] = useState(document.documentElement.clientWidth);
 
   useEffect(() => {
     // const initialData = [
@@ -4155,8 +4152,8 @@ const Basic = () => {
         vertLines: { color: "#444" },
         horzLines: { color: "#444" },
       },
-      width: width,
-      height: 500,
+      width: 0,
+      height: 0,
       crosshair: {
         vertLine: {
           width: 5,
@@ -4267,14 +4264,14 @@ const Basic = () => {
     return () => {
       chart.remove();
     };
-  }, [width]);
+  }, []);
 
   useEffect(() => {
     const handleResize = () => {
       myChart?.applyOptions({
         width: document.documentElement.clientWidth * 0.85,
       });
-      setResizeWidth(document.documentElement.clientWidth * 0.85);
+      setWidth(document.documentElement.clientWidth * 0.85);
     };
 
     window.addEventListener("resize", handleResize);
@@ -4286,6 +4283,7 @@ const Basic = () => {
       width: size.width,
     });
   };
+
   return (
     <div
       style={{
@@ -4293,7 +4291,7 @@ const Basic = () => {
       }}
     >
       <ResizableBox
-        height={500}
+        height={document.documentElement.clientHeight}
         onResize={handleResize}
         width={document.documentElement.clientWidth * 0.85}
         minConstraints={[document.documentElement.clientWidth * 0.5, 100]}
@@ -4305,11 +4303,30 @@ const Basic = () => {
       >
         <div
           style={{
-            width: resizeWidth,
+            width: width,
             position: "relative",
+            display: "flex",
+            flexDirection: "column",
           }}
-          ref={chartContainerRef}
-        ></div>
+        >
+          <div
+            style={{
+              width: "100%",
+              height: document.documentElement.clientHeight * 0.64,
+            }}
+            ref={chartContainerRef}
+          ></div>
+
+          <div
+            style={{
+              width: "100%",
+              height: document.documentElement.clientHeight * 0.35,
+              backgroundColor: "beige",
+            }}
+          >
+            Hello2
+          </div>
+        </div>
       </ResizableBox>
       <div
         style={{
