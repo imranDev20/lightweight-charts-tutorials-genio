@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { LineStyle, TickMarkType, createChart } from "lightweight-charts";
 import "../App.css";
 
@@ -3089,6 +3089,11 @@ const Basic = () => {
       },
     ];
 
+    const lineData = initialData.map((item) => ({
+      time: item.time,
+      value: (item.open + item.close) / 2,
+    }));
+
     const chart = createChart(chartContainerRef.current);
 
     chart.applyOptions({
@@ -3146,14 +3151,12 @@ const Basic = () => {
 
     chart.priceScale("right").applyOptions({
       borderColor: "#71649C",
-      visible: false,
+      visible: true,
     });
 
     chart.priceScale("left").applyOptions({
       borderColor: "#71649C",
       visible: true,
-      invertScale: true,
-      // autoScale: false,
     });
 
     // Setting the border color for the horizontal axis
@@ -3216,17 +3219,25 @@ const Basic = () => {
 
     // chart.timeScale().fitContent();
 
-    const newSeries = chart.addCandlestickSeries();
+    const lineSeries = chart.addLineSeries();
+    const candleStickSeries = chart.addCandlestickSeries();
 
-    newSeries.applyOptions({
+    candleStickSeries.applyOptions({
       wickUpColor: "rgb(54, 116, 217)",
       upColor: "rgb(54, 116, 217)",
       wickDownColor: "rgb(225, 50, 85)",
       downColor: "rgb(225, 50, 85)",
       borderVisible: false,
+      priceScaleId: "right",
     });
 
-    newSeries.setData(initialData);
+    lineSeries.applyOptions({
+      lineWidth: 1,
+      priceScaleId: "left",
+    });
+
+    candleStickSeries.setData(initialData);
+    lineSeries.setData(lineData);
 
     const handleResize = () => {
       chart.applyOptions({
@@ -3245,10 +3256,3 @@ const Basic = () => {
 };
 
 export default Basic;
-
-// lineColor: '#2962FF', topColor: '#2962FF', bottomColor: 'rgba(41, 98, 255, 0.28)' }
-// { upColor: '#26a69a', downColor: '#ef5350', borderVisible: false, wickUpColor: '#26a69a', wickDownColor: '#ef5350' }
-
-// const handleResize = () => {
-//     chart.applyOptions({ width: chartContainerRef.current.clientWidth });
-// };
