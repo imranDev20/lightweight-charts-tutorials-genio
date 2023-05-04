@@ -4,6 +4,8 @@ import "../App.css";
 
 const Basic = () => {
   const chartContainerRef = useRef();
+  const [candlePrice, setCandlePrice] = useState(null);
+  const [linePrice, setLinePrice] = useState(null);
 
   useEffect(() => {
     const initialData = [
@@ -3239,6 +3241,15 @@ const Basic = () => {
     candleStickSeries.setData(initialData);
     lineSeries.setData(lineData);
 
+    chart.subscribeCrosshairMove((param) => {
+      if (param.time) {
+        const data = param.seriesData.get(candleStickSeries);
+        const linePriceData = param.seriesData.get(lineSeries);
+        setCandlePrice(data);
+        setLinePrice(linePriceData);
+      }
+    });
+
     const handleResize = () => {
       chart.applyOptions({
         width: chartContainerRef.current.clientWidth,
@@ -3252,7 +3263,30 @@ const Basic = () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-  return <div ref={chartContainerRef}></div>;
+
+  return (
+    <div ref={chartContainerRef} style={{ position: "relative" }}>
+      <div
+        style={{
+          position: "absolute",
+          top: 20,
+          left: 100,
+          zIndex: 20,
+          color: "white",
+        }}
+      >
+        <div> Lightweight Charts</div>
+        <div style={{ display: "flex" }}>
+          <div style={{ marginRight: 10 }}>OPEN: {candlePrice?.open}</div>
+          <div style={{ marginRight: 10 }}>HIGH: {candlePrice?.high}</div>
+          <div style={{ marginRight: 10 }}>LOW: {candlePrice?.low}</div>
+          <div style={{ marginRight: 10 }}>CLOSE: {candlePrice?.close}</div>
+        </div>
+
+        <div>VALUE: {linePrice?.value}</div>
+      </div>
+    </div>
+  );
 };
 
 export default Basic;
