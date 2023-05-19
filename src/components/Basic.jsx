@@ -4,8 +4,10 @@ import "../App.css";
 
 const Basic = () => {
   const chartContainerRef = useRef();
+  const tooltipRef = useRef();
   const [candlePrice, setCandlePrice] = useState(null);
   const [linePrice, setLinePrice] = useState(null);
+  const [currentTime, setCurrentTime] = useState(null);
 
   useEffect(() => {
     const initialData = [
@@ -3091,6 +3093,26 @@ const Basic = () => {
       },
     ];
 
+    const markers = [
+      {
+        time: 1677577500,
+        position: "belowBar",
+        color: "#f68410",
+        shape: "arrowUp",
+        text: "Sold",
+        size: 2,
+      },
+
+      {
+        time: 1677818700,
+        position: "aboveBar",
+        color: "#f68410",
+        shape: "arrowDown",
+        text: "Bought",
+        size: 2,
+      },
+    ];
+
     const lineData = initialData.map((item) => ({
       time: item.time,
       value: (item.open + item.close) / 2,
@@ -3137,15 +3159,15 @@ const Basic = () => {
           return dateFormatter.format(date);
         },
 
-        priceFormatter: (price) => {
-          const myPrice = new Intl.NumberFormat("en-IN", {
-            style: "currency",
-            currency: "INR",
-            maximumFractionDigits: 0,
-          }).format(price);
+        // priceFormatter: (price) => {
+        //   const myPrice = new Intl.NumberFormat("en-IN", {
+        //     style: "currency",
+        //     currency: "INR",
+        //     maximumFractionDigits: 0,
+        //   }).format(price);
 
-          return myPrice;
-        },
+        //   return myPrice;
+        // },
       },
     });
 
@@ -3154,6 +3176,7 @@ const Basic = () => {
     chart.priceScale("right").applyOptions({
       borderColor: "#71649C",
       visible: true,
+      mode: 2,
     });
 
     chart.priceScale("left").applyOptions({
@@ -3241,10 +3264,17 @@ const Basic = () => {
     candleStickSeries.setData(initialData);
     lineSeries.setData(lineData);
 
+    candleStickSeries.setMarkers(markers);
+
     chart.subscribeCrosshairMove((param) => {
+      // console.log(coordinate, "coordinate");
+
       if (param.time) {
         const data = param.seriesData.get(candleStickSeries);
         const linePriceData = param.seriesData.get(lineSeries);
+
+        const coordinate = lineSeries.priceToCoordinate(linePriceData.value);
+
         setCandlePrice(data);
         setLinePrice(linePriceData);
       }
@@ -3266,6 +3296,24 @@ const Basic = () => {
 
   return (
     <div ref={chartContainerRef} style={{ position: "relative" }}>
+      <div
+        ref={tooltipRef}
+        style={{
+          width: 96,
+          height: 80,
+          position: "absolute",
+          display: "block",
+          padding: 8,
+          boxSizing: "border-box",
+          textAlign: "left",
+          zIndex: 1000,
+          top: 12,
+          left: 12,
+        }}
+      >
+        <div>Geniobits</div>
+        <div></div>
+      </div>
       <div
         style={{
           position: "absolute",
