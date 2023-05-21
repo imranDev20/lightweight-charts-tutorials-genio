@@ -7,7 +7,6 @@ const Basic = () => {
   const tooltipRef = useRef();
   const [candlePrice, setCandlePrice] = useState(null);
   const [linePrice, setLinePrice] = useState(null);
-  const [currentTime, setCurrentTime] = useState(null);
 
   useEffect(() => {
     const initialData = [
@@ -3267,13 +3266,9 @@ const Basic = () => {
     candleStickSeries.setMarkers(markers);
 
     chart.subscribeCrosshairMove((param) => {
-      // console.log(coordinate, "coordinate");
-
       if (param.time) {
         const data = param.seriesData.get(candleStickSeries);
         const linePriceData = param.seriesData.get(lineSeries);
-
-        const coordinate = lineSeries.priceToCoordinate(linePriceData.value);
 
         setCandlePrice(data);
         setLinePrice(linePriceData);
@@ -3296,24 +3291,6 @@ const Basic = () => {
 
   return (
     <div ref={chartContainerRef} style={{ position: "relative" }}>
-      <div
-        ref={tooltipRef}
-        style={{
-          width: 96,
-          height: 80,
-          position: "absolute",
-          display: "block",
-          padding: 8,
-          boxSizing: "border-box",
-          textAlign: "left",
-          zIndex: 1000,
-          top: 12,
-          left: 12,
-        }}
-      >
-        <div>Geniobits</div>
-        <div></div>
-      </div>
       <div
         style={{
           position: "absolute",
