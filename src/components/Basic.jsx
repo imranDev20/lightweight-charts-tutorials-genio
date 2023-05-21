@@ -4,7 +4,7 @@ import "../App.css";
 
 const Basic = () => {
   const chartContainerRef = useRef();
-  const tooltipRef = useRef();
+
   const [candlePrice, setCandlePrice] = useState(null);
   const [linePrice, setLinePrice] = useState(null);
 
