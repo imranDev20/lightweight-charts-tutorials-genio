@@ -4,9 +4,11 @@ import "../App.css";
 
 const Basic = () => {
   const chartContainerRef = useRef();
+  const tooltipRef = useRef();
 
   const [candlePrice, setCandlePrice] = useState(null);
   const [linePrice, setLinePrice] = useState(null);
+  const [currentTime, setCurrentTime] = useState(null);
 
   useEffect(() => {
     const initialData = [
@@ -3270,8 +3272,16 @@ const Basic = () => {
         const data = param.seriesData.get(candleStickSeries);
         const linePriceData = param.seriesData.get(lineSeries);
 
+        const coordinate = lineSeries.priceToCoordinate(linePriceData.value);
+
+        const shiftedCoordinate = param.point.x;
+
+        tooltipRef.current.style.left = shiftedCoordinate + "px";
+        tooltipRef.current.style.top = coordinate + "px";
+
         setCandlePrice(data);
         setLinePrice(linePriceData);
+        setCurrentTime(new Date(param.time).toLocaleDateString());
       }
     });
 
@@ -3291,6 +3301,24 @@ const Basic = () => {
 
   return (
     <div ref={chartContainerRef} style={{ position: "relative" }}>
+      <div
+        ref={tooltipRef}
+        style={{
+          position: "absolute",
+          width: 120,
+          height: 120,
+          border: "1px solid",
+          borderColor: "white",
+          zIndex: 1000,
+          color: "black",
+          background: "white",
+          padding: 5,
+        }}
+      >
+        <h3>Geniobits</h3>
+        <p>{linePrice?.value.toFixed(2)}</p>
+        <p>{currentTime}</p>
+      </div>
       <div
         style={{
           position: "absolute",
